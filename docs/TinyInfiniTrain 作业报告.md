@@ -32,16 +32,16 @@ std::vector<std::shared_ptr<Tensor>> Neg::Backward(const std::vector<std::shared
     // TODO：通过Dispatcher获取设备专属的反向传播kernel，计算梯度
     // NOTES: 依赖test_dispatcher，Neg的kernel实现已给出
     // =================================== 作业 ===================================
-CHECK_EQ(input_tensors.size(), 1)
-    const auto &input = input_tensors[0];
-    auto deviceType = input->GetDevice().Type();
-    auto kernel = Dispatcher::Instance().GetKernel({deviceType, "NegBackward"});
-    return {kernel.Call<std::shared_ptr<Tensor>>(input)};
+    CHECK_EQ(grad_outputs.size(), 1);
+    const auto &grad_output = grad_outputs[0];
+
+    auto device = grad_output->GetDevice().Type();
+    auto kernel = Dispatcher::Instance().GetKernel({device, "NegBackward"});
+    return {kernel.Call<std::shared_ptr<Tensor>>(grad_output)};
 }
 ```
 
 #### 解决思路
-1. 
 
 
 #### 遇到问题
