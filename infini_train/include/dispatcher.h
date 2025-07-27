@@ -21,6 +21,16 @@ public:
         // =================================== 作业 ===================================
 
         using FuncT = RetT (*)(ArgsT...);
+        auto fn = reinterpret_cast<FuncT>(func_ptr_);
+
+        if constexpr (std::is_void_v<RetT>) {
+            // if retT is void
+            fn(std::forward<ArgsT>(args)...);
+            return;
+        } else {
+            RetT ret = fn(std::forward<ArgsT>(args)...);
+            return ret;
+        }
         // TODO: 实现函数调用逻辑
     }
 
@@ -48,6 +58,7 @@ public:
         // TODO：实现kernel注册机制
         // 功能描述：将kernel函数与设备类型、名称绑定
         // =================================== 作业 ===================================
+        key_to_kernel_map_.emplace(key, kernel);
     }
 
 private:
@@ -60,3 +71,7 @@ private:
     // TODO：实现自动注册宏
     // 功能描述：在全局静态区注册kernel，避免显式初始化代码
     // =================================== 作业 ===================================
+    static const bool _##kernel_name##_registered##__COUNTER__ = []() {                                                \
+        infini_train::Dispatcher::Instance().Register({device, #kernel_name}, kernel_func);                            \
+        return true;                                                                                                   \
+    }();
